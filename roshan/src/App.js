@@ -5,6 +5,8 @@ import './App.css';
 import Homepage from './pages/homepage/homepage.component'
 import ShopPage from './pages/shop/shop.component.jsx'
 import Header from './components/header/header.component'
+import Auth from './pages/auth/auth.component'
+import {auth,createUserProfileDocument} from './firebase/firebase.util';
 
 
 import { directive } from '@babel/types';
@@ -16,19 +18,64 @@ const HatsPage=()=>(
 
 ); 
 
-function App() {
-  return (
-    <div>
-      <Header></Header>
-      <Switch>
- 
-      <Route  path='/shop' component={ShopPage} />
-      <Route  path='/' component={Homepage} />
-     
+class App extends React.Component {
+
+  constructor(){
+    super();
+
+    this.state={
+      currentUser:null
+    }
+  }
+
+  unsuscribeFromAuth=null;  
+
+  componentDidMount(){
+    this.unsuscribeFromAuth=auth.onAuthStateChanged(async user=>{
+      if(user){
+      const userRef=await createUserProfileDocument(user);
+      this.setState({currentUser: user});
       
-      </Switch>
-    </div>
-  );
+      userRef.onSnapshot(snapshot=>{
+        this.setState({
+          
+          id:snapshot.id,
+          ...snapshot.data()
+        },()=>{
+          console.log(this.state);
+        });
+      });
+      }
+
+     console.log(this.state);
+
+    })
+
+  }
+
+
+  componentWillUnmount(){
+    this.unsuscribeFromAuth();
+  }
+  
+  render(){
+    return (
+      <div>
+        <Header currentUser={this.state.currentUser}></Header>
+        <Switch>
+          
+        <Route  path='/auth' component={Auth} />
+        <Route  path='/shop' component={ShopPage} />
+        <Route  path='/' component={Homepage} />
+      
+      
+        
+        </Switch>
+      </div>
+    );
+  }
+
+
 }
 
 export default App;

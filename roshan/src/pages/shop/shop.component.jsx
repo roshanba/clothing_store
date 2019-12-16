@@ -1,7 +1,7 @@
 import React from 'react';
 import  SHOP_DATA from './shopdata.js';
 import PreviewCollection from '../../components/preview-collection/preview-collection.component.jsx';
-import { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } from 'constants';
+
 
 class ShopPage extends React.Component{
     constructor(props){
